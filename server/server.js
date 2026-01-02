@@ -29,8 +29,32 @@ const PORT = process.env.PORT || 3011;
 // Connect to MongoDB
 connectDB();
 
+const allowedOrigins = [
+  "http://localhost:5173",            
+  "http://localhost:3011",             
+  "https://resume-analyser-mwlu.onrender.com" 
+];
+
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like Postman, curl, or mobile apps)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      // Origin is in the whitelist
+      callback(null, true);
+    } else {
+      // Origin is NOT allowed
+      console.log("🚫 Blocked by CORS:", origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  allowedHeaders: ['Content-Type', 'Authorization'], 
+  credentials: true 
+}));
+
 app.use(express.json());
 // Error handling middleware
 app.use((error, req, res, next) => {
