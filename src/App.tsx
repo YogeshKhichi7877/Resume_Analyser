@@ -36,7 +36,9 @@ const DarkModeContext = React.createContext({
   toggleDark: () => {}
 });
 
-let ApiUrl = 'http://localhost:3011'
+// let ApiUrl = 'http://localhost:3011'
+
+let ApiUrl = 'https://resume-analyser-mwlu.onrender.com'
 
 // --- AUTH PAGE COMPONENT (Neobrutalist Style) ---
 const AuthPage = ({ onLoginSuccess }: { onLoginSuccess: (token: string, userData: any) => void }) => {

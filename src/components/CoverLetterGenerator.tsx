@@ -49,6 +49,7 @@ const CoverLetterGenerator: React.FC<CoverLetterGeneratorProps> = ({
     { id: 'enthusiastic', label: 'Enthusiastic', color: 'bg-orange-400' },
     { id: 'confident', label: 'Confident', color: 'bg-purple-400' },
     { id: 'creative', label: 'Creative', color: 'bg-pink-400' },
+    { id : 'Begginer' , label: 'Begginer' , color : 'bg-gold-300'}
   ];
 
   return (

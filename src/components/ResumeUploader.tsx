@@ -146,8 +146,8 @@ const ResumeUploader: React.FC<ResumeUploaderProps> = ({
     setError('');
     
     if (rejectedFiles.length > 0) {
-      setError('Please upload a PDF file only (max 10MB)');
-      toast('Please upload a PDF file only (max 10MB)')
+      setError('Please upload a PDF file only (max 5MB)');
+      toast('Please upload a PDF file only (max 5MB)')
       return;
     }
 
