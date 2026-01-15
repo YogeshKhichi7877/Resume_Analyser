@@ -74,7 +74,7 @@ const AuthPage = ({ onLoginSuccess }: { onLoginSuccess: (token: string, userData
       }
     } catch (error) {
       console.error('Auth Error:', error);
-      toast.error('Server error. Is the backend running?');
+      toast.error('Server error.please try again in few moments ');
     } finally {
       setLoading(false);
     }
