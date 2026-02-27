@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['ResummeAnalyser.png', 'favicon.ico'],
+      includeAssets: ['resume-logo.png', 'favicon.ico'],
       manifest: {
         name: 'Resume Pro - AI Resume Analyzer',
         short_name: 'ResumePro',
@@ -20,17 +20,17 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: '/ResummeAnalyser.png',
+            src: '/resume-logo.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/ResummeAnalyser.png',
+            src: '/resume-logo.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: '/ResummeAnalyser.png',
+            src: '/resume-logo.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
