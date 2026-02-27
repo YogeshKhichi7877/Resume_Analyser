@@ -1,2 +1,0 @@
-# Test file to verify Git is working
-This is a test file to demonstrate the Git workflow.
