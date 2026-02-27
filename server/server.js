@@ -33,11 +33,7 @@ const allowedOrigins = [
   'https://resumeanalyser-psi.vercel.app/',
   "https://resume-analyser-ch1f.onrender.com",
   "http://localhost:5173",            
-  "http://localhost:3011",             
-  "https://resume-analyser-mwlu.onrender.com",
-  'https://resumeanalyser-psi.vercel.app',
-  'https://eesumeanalyse.vercel.app/',
-  'https://resume-analyser-ypan.onrender.com'
+  "http://localhost:3011"
 ];
 
 // Middleware

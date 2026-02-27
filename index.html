@@ -3,22 +3,69 @@
   <head>
     <meta charset="UTF-8" />
     
+    <!-- PWA Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Resume Pro" />
+    <meta name="application-name" content="Resume Pro" />
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    
+    <!-- Favicon and Icons -->
     <link rel="icon" type="image/png" href="/ResummeAnalyser.png" />
+    <link rel="apple-touch-icon" href="/ResummeAnalyser.png" />
     
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Resume Pro | Resume Analyser</title>
+    <!-- Google SEO Meta Tags -->
+    <title>Resume Pro | AI Resume Analyzer & Optimizer - Free ATS Checker</title>
+    <meta name="description" content="Free AI-powered resume analysis tool for IIIT Surat students. Optimize your resume for ATS, get detailed scoring, career insights, and land your dream job." />
+    <meta name="keywords" content="resume analyzer, ATS resume checker, free resume scorer, resume optimization, career guidance, job search, resume review, AI resume, resume parser, IIIT Surat" />
+    <meta name="author" content="Resume Pro Team" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://resumeanalyser-psi.vercel.app/" />
     
-    <meta name="description" content="Analyse your resume to get a good job ATS-friendly and free." />
-    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Resume Pro - Build Your Future" />
-    <meta property="og:description" content="Stop sending boring resumes. Build one that gets you hired." />
-    <meta property="og:image" content="https://your-website.com/ResummeAnalyser.png" />
-
+    <meta property="og:url" content="https://resumeanalyser-psi.vercel.app/" />
+    <meta property="og:title" content="Resume Pro - AI Resume Analyzer & Optimizer" />
+    <meta property="og:description" content="Free AI-powered resume analysis tool. Optimize your resume for ATS and land your dream job." />
+    <meta property="og:image" content="https://resumeanalyser-psi.vercel.app/ResummeAnalyser.png" />
+    <meta property="og:site_name" content="Resume Pro" />
+    <meta property="og:locale" content="en_IN" />
+    
+    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="Resume Pro" />
-    <meta property="twitter:description" content="AI-Powered Resume Optimization." />
-    <meta property="twitter:image" content="https://your-website.com/ResummeAnalyser.png" />
+    <meta property="twitter:url" content="https://resumeanalyser-psi.vercel.app/" />
+    <meta property="twitter:title" content="Resume Pro - AI Resume Analyzer" />
+    <meta property="twitter:description" content="Free AI-powered resume analysis for your dream job. Designed for IIIT Surat students." />
+    <meta property="twitter:image" content="https://resumeanalyser-psi.vercel.app/ResummeAnalyser.png" />
+    
+    <!-- Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Resume Pro",
+      "description": "AI-powered resume analysis and optimization tool for students and job seekers",
+      "url": "https://resumeanalyser-psi.vercel.app/",
+      "applicationCategory": "CareerApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "Resume Pro",
+        "description": "Free resume analysis tool for IIIT Surat students"
+      }
+    }
+    </script>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body>
     <div id="root"></div>

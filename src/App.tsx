@@ -17,6 +17,9 @@ const ResumeComparison = React.lazy(() => import('./components/ResumeComparison'
 const EnhancedResumeRewriter = React.lazy(() => import('./components/EnhancedResumeRewriter'));
 const EnhancedCoverLetterGenerator = React.lazy(() => import('./components/EnhancedCoverLetterGenerator'));
 const NotFound = React.lazy(()=> import('./components/NotFound'))
+const PrivacyPolicy = React.lazy(() => import('./components/PrivacyPolicy'));
+const Contact = React.lazy(() => import('./components/Contact'));
+const TermsConditions = React.lazy(() => import('./components/TermsConditions'));
 
 // Keep utility and type imports as standard imports (they are small/needed immediately)
 import { exportAnalysisReport } from './utils/pdfExport';
@@ -138,14 +141,13 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout, isDark, toggleD
       
       {/* Logo Section */}
       <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2 group">
-          <div className="bg-yellow-400 border-2 border-black p-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-1px] group-hover:translate-y-[-1px] group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
-            <Zap className="w-6 h-6 fill-black" />
-          </div>
-          <h1 className={`text-2xl font-black uppercase tracking-tighter ${isDark ? 'text-white' : 'text-black'}`}>
-            RESUME <span className="text-blue-600">PRO</span>
-          </h1>
-        </div>
+        <Link to="/" className="flex items-center gap-2 group">
+          <img 
+            src="/resume-logo.png" 
+            alt="Resume Pro Logo" 
+            className="h-10 w-auto border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-1px] group-hover:translate-y-[-1px] group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+          />
+        </Link>
 
         {/* Desktop Nav Links */}
         <div className="hidden md:flex gap-3">
@@ -491,7 +493,6 @@ const handleAnalyze = async () => {
     </div>
   </div>
 </div>
-
           {/* Score Display */}
           <AnalysisResults analysis={analysis} extractedText={extractedText} />
           
@@ -870,6 +871,9 @@ function App() {
                 <Route path="/" element={<AnalyzePage />} />
                 <Route path="/compare" element={<ResumeComparison />} />
                 <Route path="/tools" element={<ToolsPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/terms-conditions" element={<TermsConditions />} />
                 <Route path="*" element={<NotFound/>} />
                 </Routes>
             </Suspense>
