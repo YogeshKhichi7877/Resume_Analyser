@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
-import { LogIn, UserPlus, Mail, Lock, User, ArrowRight, AlertTriangle, Shield, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { LogIn, UserPlus, Mail, Lock, User, ArrowRight, AlertTriangle, Shield, CheckCircle, Eye, EyeOff, MessageCircle } from 'lucide-react';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: ''
   });
+
+  useEffect(() => {
+    // Page load animation
+    setTimeout(() => setIsLoading(false), 100);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,16 +24,20 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#FDFD96] via-[#fffaaa] to-[#f0f0f0] flex items-center justify-center p-4 relative overflow-hidden">
+    <div className={`min-h-screen w-full bg-gradient-to-br from-[#FDFD96] via-[#fffaaa] to-[#f0f0f0] flex items-center justify-center p-4 relative overflow-hidden transition-opacity duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
       {/* Animated Background Elements */}
       <div className="absolute top-0 left-0 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       
-      <div className="w-full max-w-[500px] relative z-10">
+      <div className={`w-full max-w-[500px] relative z-10 transition-all duration-700 transform ${isLoading ? 'translate-y-10 opacity-0' : 'translate-y-0 opacity-100'}`}>
         {/* Logo/Brand Section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-2xl mb-4 transform hover:scale-110 transition-transform duration-300">
-            <Shield className="w-10 h-10 text-white" />
+          <div className="inline-flex items-center justify-center w-24 h-24 mb-4 transform hover:scale-110 transition-transform duration-300">
+            <img 
+              src="/resume-logo.png" 
+              alt="Resume Pro Logo" 
+              className="w-full h-full object-contain"
+            />
           </div>
           <h2 className="text-2xl font-black uppercase tracking-widest text-gray-800">Resume Pro</h2>
           <p className="text-gray-600 font-medium mt-1">AI-Powered Career Analyzer</p>
@@ -198,6 +209,21 @@ const AuthPage = () => {
               {isLogin ? 'Enter App' : 'Create Account'}
             </button>
           </form>
+
+          {/* Contact Us Link for Login Errors */}
+          {isLogin && (
+            <div className="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-bold text-red-800 text-sm">Having trouble logging in?</p>
+                  <p className="text-red-700 text-xs mt-1">
+                    If you're experiencing login issues or forgot your password, please <Link to="/contact" className="font-bold underline hover:text-red-900">contact us</Link> for assistance.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="mt-8 pt-6 border-t-2 border-gray-100 text-center">
             <button 
