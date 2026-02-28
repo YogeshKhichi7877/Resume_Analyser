@@ -84,7 +84,12 @@ const AuthPage = ({ onLoginSuccess }: { onLoginSuccess: (token: string, userData
       }
     } catch (error) {
       console.error('Auth Error:', error);
-      toast.error('Server error.please try again in few moments ');
+      // Check if it's a network error
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        toast.error('Cannot connect to server. Please check if the backend is running or contact support.');
+      } else {
+        toast.error('Server error. Please try again in a few moments.');
+      }
     } finally {
       setLoading(false);
     }
