@@ -1,7 +1,7 @@
 
 import React, { useState , useEffect, Suspense } from 'react'; // Added Suspense
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
-import { FileText, Zap, Moon, Sun, Wand2, Target, GitCompare as Compare , Lightbulb, Wrench, Cpu , PenTool, Sparkles,LogOut, Terminal} from 'lucide-react';
+import { FileText, Zap, Moon, Sun, Wand2, Target, GitCompare as Compare , Lightbulb, Wrench, Cpu , PenTool, Sparkles, LogOut, Terminal, LogIn, UserPlus, Mail, Lock, User, ArrowRight, AlertTriangle, Shield, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 // 1. Convert standard imports to React.lazy imports
@@ -47,8 +47,15 @@ let ApiUrl = 'https://resume-analyser-ch1f.onrender.com'
 const AuthPage = ({ onLoginSuccess }: { onLoginSuccess: (token: string, userData: any) => void }) => {
     // ... (Your existing AuthPage logic here - no changes needed)
     const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Page load animation
+    setTimeout(() => setIsLoading(false), 100);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,33 +91,234 @@ const AuthPage = ({ onLoginSuccess }: { onLoginSuccess: (token: string, userData
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#FDFD96] flex items-center justify-center p-4">
-      <div className="w-full max-w-[500px]">
-        <div className="flex mb-[-4px]">
-          <button onClick={() => setIsLogin(true)} className={`px-8 py-3 font-black uppercase border-4 border-black transition-all ${isLogin ? 'bg-white z-10' : 'bg-gray-200 opacity-70'}`}>Login</button>
-          <button onClick={() => setIsLogin(false)} className={`px-8 py-3 font-black uppercase border-4 border-l-0 border-black transition-all ${!isLogin ? 'bg-white z-10' : 'bg-gray-200 opacity-70'}`}>Register</button>
+    <div className={`min-h-screen w-full bg-gradient-to-br from-[#FDFD96] via-[#fffaaa] to-[#f0f0f0] flex items-center justify-center p-0 md:p-8 relative overflow-hidden transition-opacity duration-700 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+      {/* Animated Background Elements */}
+      <div className="absolute top-0 left-0 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl animate-pulse hidden md:block"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse hidden md:block" style={{ animationDelay: '1s' }}></div>
+      
+      {/* Split Screen Layout */}
+      <div className={`w-full max-w-6xl h-full md:h-[90vh] bg-white border-4 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row overflow-hidden transition-all duration-700 transform ${isLoading ? 'translate-y-10 opacity-0' : 'translate-y-0 opacity-100'}`}>
+        
+        {/* Left Half - Logo & Branding (Static) */}
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-600 to-purple-600 p-8 flex flex-col items-center justify-center relative">
+          {/* Decorative Elements */}
+          <div className="absolute top-4 left-4 w-20 h-20 bg-white/10 rounded-full"></div>
+          <div className="absolute bottom-4 right-4 w-32 h-32 bg-white/10 rounded-full"></div>
+          <div className="absolute top-1/2 right-0 w-16 h-16 bg-white/10 rounded-full transform translate-x-1/2"></div>
+          
+          {/* Logo */}
+          <div className="relative z-10 text-center">
+            <div className="inline-flex items-center justify-center w-40 h-40 mb-6 bg-white/20 backdrop-blur-sm rounded-3xl border-4 border-white/30 shadow-xl transform hover:scale-105 transition-transform duration-300">
+              <img 
+                src="/resume-logo.png" 
+                alt="Resume Pro Logo" 
+                className="w-32 h-32 object-contain"
+              />
+            </div>
+            <h1 className="text-5xl font-black text-white uppercase tracking-widest mb-4">Resume Pro</h1>
+            <p className="text-white/80 font-medium text-xl mb-8">AI-Powered Career Analyzer</p>
+            
+            {/* Features List */}
+            <div className="space-y-3 text-left">
+              <div className="flex items-center gap-3 text-white/90">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <Shield className="w-4 h-4" />
+                </div>
+                <span className="font-medium">Instant Resume Analysis</span>
+              </div>
+              <div className="flex items-center gap-3 text-white/90">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <Target className="w-4 h-4" />
+                </div>
+                <span className="font-medium">Job Description Matching</span>
+              </div>
+              <div className="flex items-center gap-3 text-white/90">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <Wand2 className="w-4 h-4" />
+                </div>
+                <span className="font-medium">AI-Powered Suggestions</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="bg-white border-4 border-black p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-          <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-2">{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
-          <form onSubmit={handleSubmit} className="space-y-6 mt-6">
+
+        {/* Right Half - Login/Register Form */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center overflow-y-auto">
+          {/* Header Toggle */}
+          <div className="flex mb-6 relative">
+            <div className="absolute inset-0 bg-gray-200 rounded-lg"></div>
+            <button 
+              onClick={() => setIsLogin(true)}
+              className={`flex-1 px-6 py-3 font-black uppercase border-2 border-black border-b-0 transition-all duration-300 relative z-10 ${isLogin ? 'bg-white translate-y-0 z-20 rounded-t-lg' : 'bg-gray-100 translate-y-1 opacity-70 rounded-t-lg'}`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <LogIn className="w-4 h-4" />
+                Login
+              </span>
+            </button>
+            <button 
+              onClick={() => setIsLogin(false)}
+              className={`flex-1 px-6 py-3 font-black uppercase border-2 border-l-0 border-black border-b-0 transition-all duration-300 relative z-10 ${!isLogin ? 'bg-white translate-y-0 z-20 rounded-t-lg' : 'bg-gray-100 translate-y-1 opacity-70 rounded-t-lg'}`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <UserPlus className="w-4 h-4" />
+                Register
+              </span>
+            </button>
+          </div>
+
+          {/* Form Card */}
+          <div className="border-2 border-black p-6 rounded-br-lg rounded-bl-lg">
+            <div className="mb-6 text-center">
+              <h2 className="text-3xl font-black uppercase tracking-tighter italic bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {isLogin ? 'Welcome Back' : 'Create Account'}
+              </h2>
+              <p className="font-bold text-gray-500 uppercase text-xs mt-2">
+                {isLogin ? 'Access your resume reports & analysis' : 'Start analyzing your career journey'}
+              </p>
+            </div>
+
+            {/* Important Notices for Registration */}
             {!isLogin && (
-              <div className="space-y-2">
-                <label className="block text-sm font-black uppercase">Name</label>
-                <input type="text" required className="w-full p-4 border-4 border-black font-bold focus:bg-blue-50" onChange={(e) => setFormData({...formData, name: e.target.value})} />
+              <div className="mb-4 space-y-2">
+                {/* Domain Notice */}
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-r-lg">
+                  <div className="flex items-start gap-2">
+                    <Shield className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-bold text-blue-800 text-xs">Institutional Access Only</p>
+                      <p className="text-blue-700 text-xs">
+                        Use <span className="font-bold">@iiitsurat.ac.in</span> email
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Password Warning */}
+                <div className="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-bold text-amber-800 text-xs">Password Cannot Be Changed</p>
+                      <p className="text-amber-700 text-xs">
+                        Choose wisely - it cannot be modified later
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
-            <div className="space-y-2">
-              <label className="block text-sm font-black uppercase">Email</label>
-              <input type="email" required className="w-full p-4 border-4 border-black font-bold focus:bg-blue-50" onChange={(e) => setFormData({...formData, email: e.target.value})} />
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {!isLogin && (
+                <div className="space-y-1">
+                  <label className="block text-xs font-black uppercase flex items-center gap-2">
+                    <User className="w-3 h-3" />
+                    Full Name
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className="w-4 h-4 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Enter your full name"
+                      className="w-full p-3 pl-10 border-2 border-gray-200 font-bold focus:outline-none focus:border-blue-500 focus:bg-blue-50 rounded-lg transition-all text-sm"
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <label className="block text-xs font-black uppercase flex items-center gap-2">
+                  <Mail className="w-3 h-3" />
+                  Email Address
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="w-4 h-4 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    placeholder={isLogin ? "your.email@iiitsurat.ac.in" : "your.name@iiitsurat.ac.in"}
+                    className="w-full p-3 pl-10 border-2 border-gray-200 font-bold focus:outline-none focus:border-blue-500 focus:bg-blue-50 rounded-lg transition-all text-sm"
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-xs font-black uppercase flex items-center gap-2">
+                  <Lock className="w-3 h-3" />
+                  Password
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="w-4 h-4 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    placeholder="••••••••"
+                    className="w-full p-3 pl-10 pr-10 border-2 border-gray-200 font-bold focus:outline-none focus:border-blue-500 focus:bg-blue-50 rounded-lg transition-all text-sm"
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 text-gray-400 hover:text-blue-600 transition-colors" />
+                    ) : (
+                      <Eye className="w-4 h-4 text-gray-400 hover:text-blue-600 transition-colors" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                disabled={loading}
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black text-lg uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all flex items-center justify-center gap-2 rounded-lg disabled:opacity-50"
+              >
+                {loading ? 'Processing...' : (isLogin ? 'Enter App' : 'Create Account')}
+              </button>
+            </form>
+
+            {/* Contact Us Link for Login Errors */}
+            {isLogin && (
+              <div className="mt-4 p-3 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-red-700 text-xs">
+                    Trouble logging in? <a href="/contact" className="font-bold underline hover:text-red-900">Contact us</a> for help
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+              <button 
+                onClick={() => setIsLogin(!isLogin)}
+                className="font-bold text-gray-600 hover:text-blue-600 text-xs flex items-center justify-center mx-auto gap-1 transition-colors"
+              >
+                {isLogin ? (
+                  <>
+                    Don't have an account? <span className="text-blue-600 font-black underline">Sign up</span>
+                  </>
+                ) : (
+                  <>
+                    Already have an account? <span className="text-blue-600 font-black underline">Login</span>
+                  </>
+                )}
+                <ArrowRight className="w-3 h-3" />
+              </button>
             </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-black uppercase">Password</label>
-              <input type="password" required className="w-full p-4 border-4 border-black font-bold focus:bg-blue-50" onChange={(e) => setFormData({...formData, password: e.target.value})} />
-            </div>
-            <button disabled={loading} type="submit" className="w-full py-4 bg-blue-600 text-white font-black text-xl border-4 border-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50">
-              {loading ? 'Processing...' : (isLogin ? 'Enter App' : 'Join Now')}
-            </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>
