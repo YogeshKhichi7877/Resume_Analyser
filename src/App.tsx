@@ -108,11 +108,11 @@ const AuthPage = ({ onLoginSuccess }: { onLoginSuccess: (token: string, userData
           
           {/* Logo */}
           <div className="relative z-10 text-center">
-            <div className="inline-flex items-center justify-center w-40 h-40 mb-6 bg-white/20 backdrop-blur-sm rounded-3xl border-4 border-white/30 shadow-xl transform hover:scale-105 transition-transform duration-300">
+            <div className="inline-flex items-center justify-center w-56 h-56 mb-6 bg-white/20 backdrop-blur-sm rounded-3xl border-4 border-white/30 shadow-xl transform hover:scale-105 transition-transform duration-300">
               <img 
                 src="/resume-logo.png" 
                 alt="Resume Pro Logo" 
-                className="w-32 h-32 object-contain"
+                className="w-44 h-44 object-contain"
               />
             </div>
             <h1 className="text-5xl font-black text-white uppercase tracking-widest mb-4">Resume Pro</h1>
