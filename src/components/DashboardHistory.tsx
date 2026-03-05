@@ -43,17 +43,29 @@ const DashboardHistory: React.FC<DashboardHistoryProps> = ({
     setError(null);
     
     try {
+      console.log('Fetching history from:', `${API_URL}/api/resume/history?email=${encodeURIComponent(userEmail)}`);
+      
       const response = await fetch(`${API_URL}/api/resume/history?email=${encodeURIComponent(userEmail)}`);
+      console.log('Response status:', response.status);
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        throw new Error('Server returned HTML instead of JSON. The history API may not be deployed yet on the backend.');
+      }
+      
       const data = await response.json();
+      console.log('History data:', data);
       
       if (data.success) {
         setHistory(data.history);
       } else {
         setError(data.error || 'Failed to fetch history');
       }
-    } catch (err) {
-      setError('Failed to connect to server');
+    } catch (err: any) {
       console.error('History fetch error:', err);
+      setError(err.message || 'Failed to connect to server. Please ensure the backend is running.');
     } finally {
       setLoading(false);
     }
@@ -71,6 +83,12 @@ const DashboardHistory: React.FC<DashboardHistoryProps> = ({
         `${API_URL}/api/resume/analysis/${id}?email=${encodeURIComponent(userEmail)}`,
         { method: 'DELETE' }
       );
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned non-JSON response');
+      }
+      
       const data = await response.json();
       
       if (data.success) {
@@ -78,9 +96,9 @@ const DashboardHistory: React.FC<DashboardHistoryProps> = ({
       } else {
         alert(data.error || 'Failed to delete');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Delete error:', err);
-      alert('Failed to delete analysis');
+      alert('Failed to delete analysis. Please ensure the backend is running.');
     }
   };
 
