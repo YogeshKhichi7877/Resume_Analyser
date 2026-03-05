@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Trash2, Eye, FileText, TrendingUp, Calendar, ArrowRight, X } from 'lucide-react';
+import { Clock, Trash2, Eye, FileText, TrendingUp, Calendar, ArrowRight, X, Loader2 } from 'lucide-react';
+import { ResumeAnalysis } from '../types/analysis';
 
 interface HistoryItem {
   id: string;
@@ -17,17 +18,20 @@ interface DashboardHistoryProps {
   onViewAnalysis?: (id: string) => void;
   isOpen: boolean;
   onClose: () => void;
+  onLoadAnalysis?: (analysis: ResumeAnalysis, extractedText: string) => void;
 }
 
 const DashboardHistory: React.FC<DashboardHistoryProps> = ({ 
   userEmail, 
   onViewAnalysis, 
   isOpen, 
-  onClose 
+  onClose,
+  onLoadAnalysis
 }) => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
 
   // API URL - update this to match your backend
   const API_URL = 'https://resume-analyser-ch1f.onrender.com';
@@ -68,6 +72,40 @@ const DashboardHistory: React.FC<DashboardHistoryProps> = ({
       setError(err.message || 'Failed to connect to server. Please ensure the backend is running.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleViewAnalysis = async (id: string) => {
+    setLoadingAnalysis(true);
+    try {
+      const response = await fetch(`${API_URL}/api/resume/analysis/${id}?email=${encodeURIComponent(userEmail)}`);
+      const contentType = response.headers.get('content-type');
+      
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned non-JSON response');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.analysis) {
+        // Close history modal
+        onClose();
+        
+        // If onLoadAnalysis callback is provided, use it
+        if (onLoadAnalysis) {
+          onLoadAnalysis(data.analysis, data.analysis.resumeText || '');
+        } else if (onViewAnalysis) {
+          // Fallback to original callback
+          onViewAnalysis(id);
+        }
+      } else {
+        alert(data.error || 'Failed to load analysis details');
+      }
+    } catch (err: any) {
+      console.error('Error loading analysis:', err);
+      alert('Failed to load analysis details. Please ensure the backend is running.');
+    } finally {
+      setLoadingAnalysis(false);
     }
   };
 
@@ -188,7 +226,7 @@ const DashboardHistory: React.FC<DashboardHistoryProps> = ({
               {history.map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => onViewAnalysis?.(item.id)}
+                  onClick={() => handleViewAnalysis(item.id)}
                   className="p-4 border-4 border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-600 dark:hover:border-blue-500 hover:shadow-lg transition-all cursor-pointer bg-white dark:bg-gray-800"
                 >
                   <div className="flex items-start justify-between">
@@ -232,16 +270,21 @@ const DashboardHistory: React.FC<DashboardHistoryProps> = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            onViewAnalysis?.(item.id);
+                            handleViewAnalysis(item.id);
                           }}
-                          className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                          disabled={loadingAnalysis}
+                          className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="View Details"
                         >
-                          <Eye className="w-4 h-4" />
+                          {loadingAnalysis ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
                         </button>
                         <button
                           onClick={(e) => handleDelete(item.id, e)}
-                          className="p-2 bg-red--700 text-white600 hover:bg-red rounded-lg transition-colors"
+                          className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />

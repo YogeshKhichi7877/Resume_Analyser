@@ -593,9 +593,38 @@ app.get('/api/resume/analysis/:id', async (req, res) => {
       return res.status(404).json({ error: 'Analysis not found' });
     }
 
+    // Format the response to match frontend expectations
+    const formattedAnalysis = {
+      id: analysis._id,
+      targetDomain: analysis.targetDomain,
+      resumeText: analysis.resumeText,
+      score: analysis.analysisResults?.score || 0,
+      ats_compatibility: analysis.analysisResults?.ats_compatibility || 0,
+      grammar_score: analysis.analysisResults?.grammar_score || 0,
+      readability_score: analysis.analysisResults?.readability_score || 0,
+      experience_match: analysis.analysisResults?.experience_match || 0,
+      strengths: analysis.analysisResults?.strengths || [],
+      weaknesses: analysis.analysisResults?.weaknesses || [],
+      improvements: analysis.analysisResults?.improvements || [],
+      hard_skills: analysis.analysisResults?.hard_skills || [],
+      soft_skills: analysis.analysisResults?.soft_skills || [],
+      keywords: analysis.analysisResults?.keywords || [],
+      missing_keywords: analysis.analysisResults?.missing_keywords || [],
+      sections_detected: analysis.analysisResults?.sections_detected || [],
+      missing_sections: analysis.analysisResults?.missing_sections || [],
+      formatting_issues: analysis.analysisResults?.formatting_issues || [],
+      grammar_issues: analysis.analysisResults?.grammar_issues || [],
+      scam_flags: analysis.analysisResults?.scam_flags || [],
+      summary: analysis.analysisResults?.summary || '',
+      bullet_improvements: analysis.analysisResults?.bullet_improvements || [],
+      top_projects: analysis.analysisResults?.top_projects || [],
+      interview_questions: analysis.analysisResults?.interview_questions || [],
+      createdAt: analysis.createdAt
+    };
+
     res.json({
       success: true,
-      analysis
+      analysis: formattedAnalysis
     });
   } catch (error) {
     console.error('Get Analysis Error:', error);

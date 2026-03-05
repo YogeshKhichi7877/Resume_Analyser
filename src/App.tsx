@@ -444,16 +444,34 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout, isDark, toggleD
   );
 };
 
-const AnalyzePage = () => {
+interface AnalyzePageProps {
+  historyAnalysis?: ResumeAnalysis | null;
+  historyExtractedText?: string;
+  onClearHistory?: () => void;
+}
+
+const AnalyzePage: React.FC<AnalyzePageProps> = ({ historyAnalysis, historyExtractedText, onClearHistory }) => {
     // ... (Your existing AnalyzePage logic here - no changes needed)
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedDomain, setSelectedDomain] = useState<string>('software-engineer');
-  const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
+  const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(historyAnalysis || null);
+  const [extractedText, setExtractedText] = useState<string>(historyExtractedText || '');
   const [jdMatchResult, setJdMatchResult] = useState<JDMatchResult | null>(null);
   const [coverLetter, setCoverLetter] = useState<CoverLetter | null>(null);
   const [bulletImprovements, setBulletImprovements] = useState<BulletImprovement[]>([]);
-  const [extractedText, setExtractedText] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Handle history analysis - clear after loading to prevent re-rendering
+  useEffect(() => {
+    if (historyAnalysis) {
+      setAnalysis(historyAnalysis);
+      setExtractedText(historyExtractedText || '');
+      // Clear history after loading
+      if (onClearHistory) {
+        onClearHistory();
+      }
+    }
+  }, [historyAnalysis]);
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
@@ -999,6 +1017,14 @@ function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [historyAnalysis, setHistoryAnalysis] = useState<ResumeAnalysis | null>(null);
+  const [historyExtractedText, setHistoryExtractedText] = useState<string>('');
+  
+  // Function to clear history analysis after loading
+  const clearHistoryAnalysis = () => {
+    setHistoryAnalysis(null);
+    setHistoryExtractedText('');
+  };
 
   // Check for session on startup
   useEffect(() => {
@@ -1104,8 +1130,10 @@ function App() {
               userEmail={user?.email || ''}
               isOpen={showHistory}
               onClose={() => setShowHistory(false)}
-              onViewAnalysis={(id) => {
-                console.log('View analysis:', id);
+              onLoadAnalysis={(analysis, extractedText) => {
+                console.log('Loading analysis from history:', analysis.id);
+                setHistoryAnalysis(analysis);
+                setHistoryExtractedText(extractedText);
                 setShowHistory(false);
               }}
             />
@@ -1122,16 +1150,16 @@ function App() {
                 </div>
             }>
                 <Routes>
-                <Route path="/" element={<AnalyzePage />} />
-                <Route path="/resume-ai" element={<AnalyzePage />} />
-                <Route path="/resume-pro" element={<AnalyzePage />} />
-                <Route path="/resume-analyser" element={<AnalyzePage />} />
-                <Route path="/resume-go" element={<AnalyzePage />} />
-                <Route path="/resume-test" element={<AnalyzePage />} />
-                <Route path="/resume-analyzer" element={<AnalyzePage />} />
-                <Route path="/ats-checker" element={<AnalyzePage />} />
-                <Route path="/free-resume-analyzer" element={<AnalyzePage />} />
-                <Route path="/resume-scorer" element={<AnalyzePage />} />
+                <Route path="/" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/resume-ai" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/resume-pro" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/resume-analyser" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/resume-go" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/resume-test" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/resume-analyzer" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/ats-checker" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/free-resume-analyzer" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/resume-scorer" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
                 <Route path="/compare" element={<ResumeComparison />} />
                 <Route path="/tools" element={<ToolsPage />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
