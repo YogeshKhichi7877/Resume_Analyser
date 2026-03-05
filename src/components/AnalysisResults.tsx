@@ -11,13 +11,15 @@ import {
   Search,
   Trophy,          // Added for Projects
   MessageSquare,   // Added for Interview
-  Briefcase        // Added for General
+  Briefcase,        // Added for General
+  Download         // Added for PDF Download
 } from 'lucide-react';
 import { ResumeAnalysis } from '../types/analysis';
 import ScoreDisplay from './ScoreDisplay';
 import JobHunter from './JobHunter';
 import RoastSection from './RoastSection';
 import SkillGapLearner from './SkillGapLearner';
+import { exportAnalysisFromResults } from '../utils/pdfExport';
 
 interface AnalysisResultsProps {
   analysis: ResumeAnalysis;
@@ -35,12 +37,26 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysis, extractedTe
   const keywords = analysis.keywords || [];
   const missingKeywords = analysis.missing_keywords || [];
 
+  // Handle PDF download
+  const handleDownloadPDF = () => {
+    exportAnalysisFromResults(analysis, analysis.targetDomain || 'general', extractedText);
+  };
+
   return (
     <div className="p-6 space-y-8 animate-in fade-in duration-500">
       
       {/* --- SECTION 1: CORE METRICS --- */}
       <section>
-        <h1 className="text-3xl font-black uppercase mb-6 italic">Performance Audit</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-black uppercase italic">Performance Audit</h1>
+          <button
+            onClick={handleDownloadPDF}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-colors"
+          >
+            <Download className="w-5 h-5" />
+            Download PDF
+          </button>
+        </div>
         <ScoreDisplay 
           score={analysis.score} 
           atsCompatibility={analysis.ats_compatibility} 

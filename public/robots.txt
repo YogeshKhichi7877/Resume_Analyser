@@ -1,0 +1,54 @@
+# Robots.txt for Resume AI - Free Resume Analyzer
+# https://resumeanalyser-psi.vercel.app/
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://resumeanalyser-psi.vercel.app/sitemap.xml
+
+# Crawl-delay (optional, be nice to servers)
+Crawl-delay: 1
+
+# Allow all search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: BingPreview
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Sogou spider
+Allow: /
+
+User-agent: Exabot
+Allow: /
+
+User-agent: FACEBOOKEXTERNALHIT
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+# Special instructions for specific paths
+# No disallow - allow all content for SEO

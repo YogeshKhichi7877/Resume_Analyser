@@ -1,7 +1,7 @@
 
 import React, { useState , useEffect, Suspense } from 'react'; // Added Suspense
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
-import { FileText, Zap, Moon, Sun, Wand2, Target, GitCompare as Compare , Lightbulb, Wrench, Cpu , PenTool, Sparkles, LogOut, Terminal, LogIn, UserPlus, Mail, Lock, User, ArrowRight, AlertTriangle, Shield, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { FileText, Zap, Moon, Sun, Wand2, Target, GitCompare as Compare , Lightbulb, Wrench, Cpu , PenTool, Sparkles, LogOut, Terminal, LogIn, UserPlus, Mail, Lock, User, ArrowRight, AlertTriangle, Shield, CheckCircle, Eye, EyeOff, Clock } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 // 1. Convert standard imports to React.lazy imports
@@ -20,6 +20,7 @@ const NotFound = React.lazy(()=> import('./components/NotFound'))
 const PrivacyPolicy = React.lazy(() => import('./components/PrivacyPolicy'));
 const Contact = React.lazy(() => import('./components/Contact'));
 const TermsConditions = React.lazy(() => import('./components/TermsConditions'));
+const DashboardHistory = React.lazy(() => import('./components/DashboardHistory'));
 
 // Keep utility and type imports as standard imports (they are small/needed immediately)
 import { exportAnalysisReport } from './utils/pdfExport';
@@ -337,16 +338,23 @@ interface NavigationProps {
   onLogout: () => void;
   isDark: boolean;
   toggleDark: () => void;
+  onShowHistory: () => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ user, onLogout, isDark, toggleDark }) => {
+const Navigation: React.FC<NavigationProps> = ({ user, onLogout, isDark, toggleDark, onShowHistory }) => {
     // ... (Your existing Navigation logic here - no changes needed)
     const location = useLocation();
+
+  // History button handler
+  const handleHistoryClick = () => {
+    onShowHistory();
+  };
 
   const navItems = [
     { path: '/', label: 'Analyze', icon: FileText },
     { path: '/compare', label: 'Compare', icon: Compare },
     { path: '/tools', label: 'Tools', icon: Wand2 },
+    { path: '#', label: 'History', icon: Clock, onClick: handleHistoryClick },
   ];
 
   return (
@@ -366,6 +374,24 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout, isDark, toggleD
         <div className="hidden md:flex gap-3">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
+            const isHistory = item.path === '#';
+            
+            if (isHistory) {
+              return (
+                <button
+                  key={item.label}
+                  onClick={item.onClick}
+                  className={`
+                    flex items-center gap-2 px-4 py-2 border-2 border-black font-black uppercase text-xs transition-all
+                    bg-blue-500 text-white hover:bg-blue-600
+                  `}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.label}
+                </button>
+              );
+            }
+            
             return (
               <Link
                 key={item.path}
@@ -972,6 +998,7 @@ function App() {
   const [isDark, setIsDark] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Check for session on startup
   useEffect(() => {
@@ -1067,8 +1094,22 @@ function App() {
             user={user} 
             onLogout={handleLogout} 
             isDark={isDark} 
-            toggleDark={toggleDark} 
+            toggleDark={toggleDark}
+            onShowHistory={() => setShowHistory(true)}
           />
+          
+          {/* History Modal */}
+          <Suspense fallback={null}>
+            <DashboardHistory
+              userEmail={user?.email || ''}
+              isOpen={showHistory}
+              onClose={() => setShowHistory(false)}
+              onViewAnalysis={(id) => {
+                console.log('View analysis:', id);
+                setShowHistory(false);
+              }}
+            />
+          </Suspense>
           
           <main className="w-full max-w-[1400px] mx-auto">
              {/* 2. Wrap Routes in Suspense with a loading fallback */}
@@ -1082,6 +1123,15 @@ function App() {
             }>
                 <Routes>
                 <Route path="/" element={<AnalyzePage />} />
+                <Route path="/resume-ai" element={<AnalyzePage />} />
+                <Route path="/resume-pro" element={<AnalyzePage />} />
+                <Route path="/resume-analyser" element={<AnalyzePage />} />
+                <Route path="/resume-go" element={<AnalyzePage />} />
+                <Route path="/resume-test" element={<AnalyzePage />} />
+                <Route path="/resume-analyzer" element={<AnalyzePage />} />
+                <Route path="/ats-checker" element={<AnalyzePage />} />
+                <Route path="/free-resume-analyzer" element={<AnalyzePage />} />
+                <Route path="/resume-scorer" element={<AnalyzePage />} />
                 <Route path="/compare" element={<ResumeComparison />} />
                 <Route path="/tools" element={<ToolsPage />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />

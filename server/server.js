@@ -527,6 +527,109 @@ app.post('/api/resume/cover-letter-enhanced', async (req, res) => {
 });
 
 
+// --- ROUTE: Get User History (Top 20, Auto-delete old entries) ---
+app.get('/api/resume/history', async (req, res) => {
+  try {
+    const userEmail = req.query.email || req.body.userEmail;
+    
+    if (!userEmail) {
+      return res.status(401).json({ error: 'User email is required' });
+    }
+
+    // Find user
+    const user = await User.findOne({ email: userEmail });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Get all history for user, sorted by newest first
+    let history = await ResumeAnalysis.find({ user: user._id })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // If more than 20 entries, keep only top 20 and delete the rest
+    if (history.length > 20) {
+      const idsToDelete = history.slice(20).map(h => h._id);
+      await ResumeAnalysis.deleteMany({ _id: { $in: idsToDelete } });
+      history = history.slice(0, 20);
+    }
+
+    // Format the response
+    const formattedHistory = history.map(h => ({
+      id: h._id,
+      targetDomain: h.targetDomain,
+      score: h.analysisResults?.score || 0,
+      atsCompatibility: h.analysisResults?.ats_compatibility || 0,
+      grammarScore: h.analysisResults?.grammar_score || 0,
+      readabilityScore: h.analysisResults?.readability_score || 0,
+      createdAt: h.createdAt,
+      summary: h.analysisResults?.summary?.substring(0, 100) || 'No summary available'
+    }));
+
+    res.json({
+      success: true,
+      history: formattedHistory,
+      total: formattedHistory.length
+    });
+  } catch (error) {
+    console.error('History Error:', error);
+    res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
+
+// --- ROUTE: Get Single Analysis by ID ---
+app.get('/api/resume/analysis/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userEmail = req.query.email || req.body.userEmail;
+    
+    if (!userEmail) {
+      return res.status(401).json({ error: 'User email is required' });
+    }
+
+    const analysis = await ResumeAnalysis.findById(id).lean();
+    
+    if (!analysis) {
+      return res.status(404).json({ error: 'Analysis not found' });
+    }
+
+    res.json({
+      success: true,
+      analysis
+    });
+  } catch (error) {
+    console.error('Get Analysis Error:', error);
+    res.status(500).json({ error: 'Failed to fetch analysis' });
+  }
+});
+
+// --- ROUTE: Delete Single Analysis ---
+app.delete('/api/resume/analysis/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userEmail = req.query.email || req.body.userEmail;
+    
+    if (!userEmail) {
+      return res.status(401).json({ error: 'User email is required' });
+    }
+
+    const result = await ResumeAnalysis.findByIdAndDelete(id);
+    
+    if (!result) {
+      return res.status(404).json({ error: 'Analysis not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Analysis deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete Analysis Error:', error);
+    res.status(500).json({ error: 'Failed to delete analysis' });
+  }
+});
+
+
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 

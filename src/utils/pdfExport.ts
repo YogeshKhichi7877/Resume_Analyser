@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
-import { AnalysisReport } from '../types/analysis';
+import { AnalysisReport, ResumeAnalysis } from '../types/analysis';
 
+// Existing function for full analysis report
 export const exportAnalysisReport = (report: AnalysisReport) => {
   const pdf = new jsPDF();
   const pageWidth = pdf.internal.pageSize.width;
@@ -133,5 +134,188 @@ export const exportAnalysisReport = (report: AnalysisReport) => {
 
   // Save the PDF
   const fileName = `resume-analysis-${report.target_domain}-${new Date().toISOString().split('T')[0]}.pdf`;
+  pdf.save(fileName);
+};
+
+// New function for exporting from ResumeAnalysis (used in AnalysisResults)
+export const exportAnalysisFromResults = (analysis: ResumeAnalysis, targetDomain: string, extractedText?: string) => {
+  const pdf = new jsPDF();
+  const pageWidth = pdf.internal.pageSize.width;
+  const margin = 20;
+  let yPosition = margin;
+
+  // Helper function to add text with word wrapping
+  const addText = (text: string, fontSize: number = 12, isBold: boolean = false) => {
+    pdf.setFontSize(fontSize);
+    if (isBold) {
+      pdf.setFont('helvetica', 'bold');
+    } else {
+      pdf.setFont('helvetica', 'normal');
+    }
+    
+    const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
+    pdf.text(lines, margin, yPosition);
+    yPosition += lines.length * (fontSize * 0.4) + 5;
+    
+    // Check if we need a new page
+    if (yPosition > pdf.internal.pageSize.height - margin) {
+      pdf.addPage();
+      yPosition = margin;
+    }
+  };
+
+  // Header
+  addText('RESUME ANALYSIS REPORT', 20, true);
+  addText(`Generated on: ${new Date().toLocaleDateString()}`, 10);
+  yPosition += 10;
+
+  // Basic Info
+  addText('ANALYSIS DETAILS', 16, true);
+  addText(`Target Role: ${targetDomain.replace('-', ' ').toUpperCase()}`, 12);
+  addText(`Analysis Date: ${new Date().toLocaleDateString()}`, 12);
+  yPosition += 10;
+
+  // Scores
+  addText('PERFORMANCE SCORES', 16, true);
+  addText(`Overall Score: ${analysis.score}/100`, 12, true);
+  addText(`ATS Compatibility: ${analysis.ats_compatibility}/100`, 12);
+  addText(`Grammar Score: ${analysis.grammar_score}/100`, 12);
+  addText(`Readability Score: ${analysis.readability_score}/100`, 12);
+  addText(`Experience Match: ${analysis.experience_match}/100`, 12);
+  yPosition += 10;
+
+  // Strengths
+  if (analysis.strengths && analysis.strengths.length > 0) {
+    addText('STRENGTHS', 16, true);
+    analysis.strengths.forEach((strength, index) => {
+      addText(`${index + 1}. ${strength}`, 11);
+    });
+    yPosition += 10;
+  }
+
+  // Weaknesses
+  if (analysis.weaknesses && analysis.weaknesses.length > 0) {
+    addText('AREAS FOR IMPROVEMENT', 16, true);
+    analysis.weaknesses.forEach((weakness, index) => {
+      addText(`${index + 1}. ${weakness}`, 11);
+    });
+    yPosition += 10;
+  }
+
+  // Improvement Tips
+  if (analysis.improvements && analysis.improvements.length > 0) {
+    addText('OPTIMIZATION RECOMMENDATIONS', 16, true);
+    analysis.improvements.forEach((improvement, index) => {
+      addText(`${index + 1}. ${improvement}`, 11);
+    });
+    yPosition += 10;
+  }
+
+  // Skills
+  if (analysis.hard_skills && analysis.hard_skills.length > 0) {
+    addText('SKILLS ANALYSIS', 16, true);
+    addText('Hard Skills:', 12, true);
+    addText(analysis.hard_skills.join(', '), 11);
+    yPosition += 5;
+  }
+  
+  if (analysis.soft_skills && analysis.soft_skills.length > 0) {
+    addText('Soft Skills:', 12, true);
+    addText(analysis.soft_skills.join(', '), 11);
+    yPosition += 10;
+  }
+
+  // Keywords
+  if (analysis.keywords && analysis.keywords.length > 0) {
+    addText('KEYWORDS DETECTED', 16, true);
+    addText(analysis.keywords.join(', '), 11);
+    yPosition += 5;
+  }
+
+  if (analysis.missing_keywords && analysis.missing_keywords.length > 0) {
+    addText('MISSING KEYWORDS', 16, true);
+    addText(analysis.missing_keywords.join(', '), 11);
+    yPosition += 10;
+  }
+
+  // Sections
+  if (analysis.sections_detected && analysis.sections_detected.length > 0) {
+    addText('RESUME STRUCTURE', 16, true);
+    addText('Detected Sections:', 12, true);
+    addText(analysis.sections_detected.join(', '), 11);
+    yPosition += 5;
+  }
+
+  if (analysis.missing_sections && analysis.missing_sections.length > 0) {
+    addText('Missing Sections:', 12, true);
+    addText(analysis.missing_sections.join(', '), 11);
+    yPosition += 10;
+  }
+
+  // Formatting Issues
+  if (analysis.formatting_issues && analysis.formatting_issues.length > 0) {
+    addText('FORMATTING ISSUES', 16, true);
+    analysis.formatting_issues.forEach((issue, index) => {
+      addText(`${index + 1}. ${issue}`, 11);
+    });
+    yPosition += 10;
+  }
+
+  // Grammar Issues
+  if (analysis.grammar_issues && analysis.grammar_issues.length > 0) {
+    addText('GRAMMAR ISSUES', 16, true);
+    analysis.grammar_issues.forEach((issue, index) => {
+      addText(`${index + 1}. ${issue}`, 11);
+    });
+    yPosition += 10;
+  }
+
+  // Bullet Improvements
+  if (analysis.bullet_improvements && analysis.bullet_improvements.length > 0) {
+    addText('BULLET POINT IMPROVEMENTS', 16, true);
+    analysis.bullet_improvements.forEach((bullet, index) => {
+      addText(`Original: ${bullet.original.substring(0, 100)}...`, 10);
+      addText(`Improved: ${bullet.improved.substring(0, 100)}...`, 10);
+      addText(`Reason: ${bullet.reason}`, 10);
+      yPosition += 5;
+    });
+    yPosition += 10;
+  }
+
+  // Top Projects
+  if (analysis.top_projects && analysis.top_projects.length > 0) {
+    addText('PROJECT IMPACT ANALYSIS', 16, true);
+    analysis.top_projects.forEach((project, index) => {
+      addText(`${index + 1}. ${project.name} (Score: ${project.score})`, 11, true);
+      addText(`   ${project.reason}`, 10);
+    });
+    yPosition += 10;
+  }
+
+  // Interview Questions
+  if (analysis.interview_questions && analysis.interview_questions.length > 0) {
+    addText('INTERVIEW QUESTIONS', 16, true);
+    analysis.interview_questions.forEach((q, index) => {
+      addText(`${index + 1}. ${q.question}`, 11, true);
+      addText(`   Importance: ${q.importance}`, 10);
+      addText(`   ${q.reason}`, 10);
+    });
+    yPosition += 10;
+  }
+
+  // Summary
+  if (analysis.summary) {
+    addText('EXECUTIVE SUMMARY', 16, true);
+    addText(analysis.summary, 11);
+  }
+
+  // Footer
+  yPosition = pdf.internal.pageSize.height - margin;
+  pdf.setFontSize(8);
+  pdf.setFont('helvetica', 'normal');
+  pdf.text('Generated by Resume AI - Free Resume Analyzer', margin, yPosition);
+
+  // Save the PDF
+  const fileName = `resume-analysis-${targetDomain}-${new Date().toISOString().split('T')[0]}.pdf`;
   pdf.save(fileName);
 };
