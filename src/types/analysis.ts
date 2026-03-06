@@ -24,6 +24,18 @@ export interface ResumeAnalysis {
   interview_questions: { question: string; reason: string ; importance: string }[];
 }
 
+// History-specific types
+export interface HistoryItem {
+  id: string;
+  targetDomain: string;
+  score: number;
+  atsCompatibility: number;
+  grammarScore: number;
+  readabilityScore: number;
+  createdAt: string;
+  summary: string;
+}
+
 export interface BulletImprovement {
   original: string;
   improved: string;
