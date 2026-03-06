@@ -20,7 +20,6 @@ const NotFound = React.lazy(()=> import('./components/NotFound'))
 const PrivacyPolicy = React.lazy(() => import('./components/PrivacyPolicy'));
 const Contact = React.lazy(() => import('./components/Contact'));
 const TermsConditions = React.lazy(() => import('./components/TermsConditions'));
-const DashboardHistory = React.lazy(() => import('./components/DashboardHistory'));
 
 // Keep utility and type imports as standard imports (they are small/needed immediately)
 import { exportAnalysisReport } from './utils/pdfExport';
@@ -338,23 +337,17 @@ interface NavigationProps {
   onLogout: () => void;
   isDark: boolean;
   toggleDark: () => void;
-  onShowHistory: () => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ user, onLogout, isDark, toggleDark, onShowHistory }) => {
+const Navigation: React.FC<NavigationProps> = ({ user, onLogout, isDark, toggleDark }) => {
     // ... (Your existing Navigation logic here - no changes needed)
     const location = useLocation();
 
-  // History button handler
-  const handleHistoryClick = () => {
-    onShowHistory();
-  };
 
   const navItems = [
     { path: '/', label: 'Analyze', icon: FileText },
     { path: '/compare', label: 'Compare', icon: Compare },
     { path: '/tools', label: 'Tools', icon: Wand2 },
-    { path: '#', label: 'History', icon: Clock, onClick: handleHistoryClick },
   ];
 
   return (
@@ -374,23 +367,6 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout, isDark, toggleD
         <div className="hidden md:flex gap-3">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
-            const isHistory = item.path === '#';
-            
-            if (isHistory) {
-              return (
-                <button
-                  key={item.label}
-                  onClick={item.onClick}
-                  className={`
-                    flex items-center gap-2 px-4 py-2 border-2 border-black font-black uppercase text-xs transition-all
-                    bg-blue-500 text-white hover:bg-blue-600
-                  `}
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.label}
-                </button>
-              );
-            }
             
             return (
               <Link
@@ -1016,8 +992,7 @@ function App() {
   const [isDark, setIsDark] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-  const [historyAnalysis, setHistoryAnalysis] = useState<ResumeAnalysis | null>(null);
+    const [historyAnalysis, setHistoryAnalysis] = useState<ResumeAnalysis | null>(null);
   const [historyExtractedText, setHistoryExtractedText] = useState<string>('');
   
   // Function to clear history analysis after loading
@@ -1121,23 +1096,8 @@ function App() {
             onLogout={handleLogout} 
             isDark={isDark} 
             toggleDark={toggleDark}
-            onShowHistory={() => setShowHistory(true)}
-          />
+                      />
           
-          {/* History Modal */}
-          <Suspense fallback={null}>
-            <DashboardHistory
-              userEmail={user?.email || ''}
-              isOpen={showHistory}
-              onClose={() => setShowHistory(false)}
-              onLoadAnalysis={(analysis, extractedText) => {
-                console.log('Loading analysis from history:', analysis.id);
-                setHistoryAnalysis(analysis);
-                setHistoryExtractedText(extractedText);
-                setShowHistory(false);
-              }}
-            />
-          </Suspense>
           
           <main className="w-full max-w-[1400px] mx-auto">
              {/* 2. Wrap Routes in Suspense with a loading fallback */}
