@@ -528,18 +528,13 @@ app.post('/api/resume/cover-letter-enhanced', async (req, res) => {
 
 
 // --- ROUTE: Get User History (Top 20, Auto-delete old entries) ---
-app.get('/api/resume/history', async (req, res) => {
+app.get('/api/resume/history', protect, async (req, res) => {
   try {
-    const userEmail = req.query.email || req.body.userEmail;
+    // Get user from the protect middleware
+    const user = req.user;
     
-    if (!userEmail) {
-      return res.status(401).json({ error: 'User email is required' });
-    }
-
-    // Find user
-    const user = await User.findOne({ email: userEmail });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(401).json({ error: 'User not authenticated' });
     }
 
     // Get all history for user, sorted by newest first
@@ -578,19 +573,24 @@ app.get('/api/resume/history', async (req, res) => {
 });
 
 // --- ROUTE: Get Single Analysis by ID ---
-app.get('/api/resume/analysis/:id', async (req, res) => {
+app.get('/api/resume/analysis/:id', protect, async (req, res) => {
   try {
     const { id } = req.params;
-    const userEmail = req.query.email || req.body.userEmail;
+    const user = req.user;
     
-    if (!userEmail) {
-      return res.status(401).json({ error: 'User email is required' });
+    if (!user) {
+      return res.status(401).json({ error: 'User not authenticated' });
     }
 
     const analysis = await ResumeAnalysis.findById(id).lean();
     
     if (!analysis) {
       return res.status(404).json({ error: 'Analysis not found' });
+    }
+
+    // Verify the analysis belongs to the user
+    if (analysis.user.toString() !== user._id.toString()) {
+      return res.status(403).json({ error: 'Not authorized to view this analysis' });
     }
 
     // Format the response to match frontend expectations
@@ -633,16 +633,27 @@ app.get('/api/resume/analysis/:id', async (req, res) => {
 });
 
 // --- ROUTE: Delete Single Analysis ---
-app.delete('/api/resume/analysis/:id', async (req, res) => {
+app.delete('/api/resume/analysis/:id', protect, async (req, res) => {
   try {
     const { id } = req.params;
-    const userEmail = req.query.email || req.body.userEmail;
+    const user = req.user;
     
-    if (!userEmail) {
-      return res.status(401).json({ error: 'User email is required' });
+    if (!user) {
+      return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    const result = await ResumeAnalysis.findByIdAndDelete(id);
+    const analysis = await ResumeAnalysis.findById(id);
+    
+    if (!analysis) {
+      return res.status(404).json({ error: 'Analysis not found' });
+    }
+
+    // Verify the analysis belongs to the user
+    if (analysis.user.toString() !== user._id.toString()) {
+      return res.status(403).json({ error: 'Not authorized to delete this analysis' });
+    }
+
+    await ResumeAnalysis.findByIdAndDelete(id);
     
     if (!result) {
       return res.status(404).json({ error: 'Analysis not found' });

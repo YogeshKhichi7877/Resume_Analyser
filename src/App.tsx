@@ -20,6 +20,7 @@ const NotFound = React.lazy(()=> import('./components/NotFound'))
 const PrivacyPolicy = React.lazy(() => import('./components/PrivacyPolicy'));
 const Contact = React.lazy(() => import('./components/Contact'));
 const TermsConditions = React.lazy(() => import('./components/TermsConditions'));
+const DashboardHistory = React.lazy(() => import('./components/DashboardHistory'));
 
 // Keep utility and type imports as standard imports (they are small/needed immediately)
 import { exportAnalysisReport } from './utils/pdfExport';
@@ -346,6 +347,7 @@ const Navigation: React.FC<NavigationProps> = ({ user, onLogout, isDark, toggleD
 
   const navItems = [
     { path: '/', label: 'Analyze', icon: FileText },
+    { path: '/history', label: 'History', icon: Clock },
     { path: '/compare', label: 'Compare', icon: Compare },
     { path: '/tools', label: 'Tools', icon: Wand2 },
   ];
@@ -1111,6 +1113,7 @@ function App() {
             }>
                 <Routes>
                 <Route path="/" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
+                <Route path="/history" element={<DashboardHistory />} />
                 <Route path="/resume-ai" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
                 <Route path="/resume-pro" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
                 <Route path="/resume-analyser" element={<AnalyzePage historyAnalysis={historyAnalysis} historyExtractedText={historyExtractedText} onClearHistory={clearHistoryAnalysis} />} />
