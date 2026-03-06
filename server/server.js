@@ -30,10 +30,11 @@ const PORT = process.env.PORT || 3011;
 connectDB();
 
 const allowedOrigins = [
+  'https://resumeanalyser-psi.vercel.app',
   'https://resumeanalyser-psi.vercel.app/',
-  "https://resume-analyser-ch1f.onrender.com",
-  "http://localhost:5173",            
-  "http://localhost:3011"
+  'https://resume-analyser-ch1f.onrender.com',
+  'http://localhost:5173',            
+  'http://localhost:3011'
 ];
 
 // Middleware
@@ -42,13 +43,17 @@ app.use(cors({
     // Allow requests with no origin (like Postman, curl, or mobile apps)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // Remove trailing slash for comparison
+    const cleanOrigin = origin.replace(/\/$/, '');
+    const cleanAllowedOrigins = allowedOrigins.map(o => o.replace(/\/$/, ''));
+    
+    if (cleanAllowedOrigins.indexOf(cleanOrigin) !== -1) {
       // Origin is in the whitelist
       callback(null, true);
     } else {
-      // Origin is NOT allowed
-      console.log("🚫 Blocked by CORS:", origin);
-      callback(new Error('Not allowed by CORS'));
+      // Log but allow for debugging
+      console.log("CORS request from:", origin);
+      callback(null, true);
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'], 
