@@ -16,7 +16,7 @@ import {
 import toast from 'react-hot-toast';
 
 // API URL - same as in App.tsx
-const ApiUrl = 'https://resumeanalyser-psi.vercel.app';
+const ApiUrl = 'https://resume-analyser-ch1f.onrender.com';
 
 // Types
 interface HistoryItem {

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-let ApiUrl = 'https://resumeanalyser-psi.vercel.app'
+let ApiUrl = 'https://resume-analyser-ch1f.onrender.com'
 
 interface Resource {
   title: string;

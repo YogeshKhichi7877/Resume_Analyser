@@ -7,10 +7,6 @@
   "devCommand": "npm run dev",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/server.js"
-    },
-    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
