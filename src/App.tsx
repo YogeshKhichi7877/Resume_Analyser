@@ -473,17 +473,6 @@ const handleAnalyze = async () => {
       formData.append('resume', selectedFile);
       formData.append('targetDomain', selectedDomain);
 
-      // 2. Add User Details
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        const user = JSON.parse(userStr);
-        // Send both ID formats to handle different Mongo versions/libraries
-        formData.append('userId', user.id || user._id); 
-        formData.append('userEmail', user.email);
-      } else {
-        throw new Error("User session invalid. Please relogin.");
-      }
-
       // 3. Make the Request
       const response = await fetch(`${ApiUrl}/api/resume/upload`, {
         method: 'POST',
@@ -514,7 +503,11 @@ const handleAnalyze = async () => {
       }
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Connection failed. Is the server running on port 3011?');
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        toast.error('Cannot connect to server. Please check your connection or contact support.');
+      } else {
+        toast.error('An unexpected error occurred during analysis.');
+      }
     } finally {
       setIsLoading(false);
     }

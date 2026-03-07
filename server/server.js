@@ -125,35 +125,20 @@ const protect = async (req, res, next) => {
 };
 
 
-app.post('/api/resume/upload', upload.single('resume'), async (req, res) => {
+app.post('/api/resume/upload', protect, upload.single('resume'), async (req, res) => {
   try {
     // 1. File Validation
     if (!req.file) {
       return res.status(400).json({ error: 'No resume file uploaded' });
     }
 
-    const userEmail = req.body.userEmail || (req.user ? req.user.email : null);
-    
-    // Change 'const' to 'let' so we can update it after DB lookup
-    let userId = req.body.userId || (req.user ? req.user._id : null);
-
-    if (!userEmail) {
-      console.log("❌ Missing User Email. Body:", req.body);
-      return res.status(401).json({ 
-        error: 'Unauthorized. User Email is required to save this report.' 
-      });
+    // 2. User validation (from 'protect' middleware)
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized. User session is invalid.' });
     }
+    const userEmail = req.user.email;
+    const userId = req.user._id;
 
-    // 3. Resolve User ID from Database
-    // This fixes the "User not found" or "Invalid ID" issues
-    const existingUser = await User.findOne({ email: userEmail });
-    
-    if (existingUser) {
-      userId = existingUser._id; // Now works because userId is 'let'
-    } else {
-      // If user doesn't exist, stop here (or create a guest user if you prefer)
-      return res.status(404).json({ error: 'User account not found. Please log in first.' });
-    }
 
     // 4. Extract Text from PDF
     console.log("📄 Parsing PDF...");
