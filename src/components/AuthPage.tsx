@@ -312,8 +312,28 @@ const AuthPage = () => {
     setError('');
     setIsSubmitting(true);
 
+    // Wake up Render server first (handles free tier sleep)
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      await fetch(`${API_BASE_URL}/api/health`, {
+        method: 'GET',
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      console.log('Server is awake');
+    } catch (wakeError) {
+      // Server might be waking up, continue anyway
+      console.log('Waking up server...');
+    }
+    
+    // Add small delay to allow server to wake up
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
     // Determine the endpoint based on whether the user is logging in or registering
-    const endpoint = isLogin ? `${API_BASE_URL}/login` : `${API_BASE_URL}/register`;
+    const endpoint = isLogin ? `${API_BASE_URL}/api/auth/login` : `${API_BASE_URL}/api/auth/register`;
     
     // Setup payload (login usually doesn't need the name field)
     const payload = isLogin 

@@ -468,11 +468,33 @@ const handleAnalyze = async () => {
     }
 
     setIsLoading(true);
+    
+    // Wake up Render server first (handles free tier sleep)
     try {
-      const formData = new FormData();
-      formData.append('resume', selectedFile);
-      formData.append('targetDomain', selectedDomain);
-
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      await fetch(`${ApiUrl}/api/health`, {
+        method: 'GET',
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      console.log('Server is awake');
+    } catch (error) {
+      // Server might be waking up, continue anyway
+      console.log('Waking up server...');
+    }
+    
+    // Add small delay to allow server to wake up
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Create formData outside try block for retry access
+    const formData = new FormData();
+    formData.append('resume', selectedFile);
+    formData.append('targetDomain', selectedDomain);
+    
+    try {
       // 3. Make the Request
       const response = await fetch(`${ApiUrl}/api/resume/upload`, {
         method: 'POST',
@@ -504,7 +526,33 @@ const handleAnalyze = async () => {
     } catch (error) {
       console.error('Upload error:', error);
       if (error instanceof TypeError && error.message === 'Failed to fetch') {
-        toast.error('Cannot connect to server. Please check your connection or contact support.');
+        toast.error('Server is waking up. Please try again in a few seconds...');
+        // Retry once after a delay
+        setTimeout(async () => {
+          try {
+            setIsLoading(true);
+            const response = await fetch(`${ApiUrl}/api/resume/upload`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+              body: formData,
+            });
+            const data = await response.json();
+            if (data.success) {
+              setAnalysis(data.results || data.analysis);
+              setExtractedText(data.extractedText || '');
+              toast.success('Analysis Complete!');
+            } else {
+              toast.error(data.error || 'Analysis failed.');
+            }
+          } catch (retryError) {
+            toast.error('Cannot connect to server. Please try again later.');
+          } finally {
+            setIsLoading(false);
+          }
+        }, 5000);
+        return;
       } else {
         toast.error('An unexpected error occurred during analysis.');
       }
