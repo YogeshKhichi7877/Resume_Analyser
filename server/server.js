@@ -2,7 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
-import pdfParse from 'pdf-parse';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse/lib/pdf-parse.js');
 import { Groq } from 'groq-sdk';
 import connectDB from './config/database.js';
 import ResumeAnalysis from './models/ResumeAnalysis.js';
@@ -33,6 +35,7 @@ const allowedOrigins = [
   'https://resumeanalyser-psi.vercel.app',
   'https://resumeanalyser-psi.vercel.app/',
   'https://resume-analyser-ch1f.onrender.com',
+  'https://eesumeanalyse.vercel.app/',
   'http://localhost:5173',            
   'http://localhost:3011'
 ];
@@ -56,22 +59,15 @@ app.use(cors({
       callback(null, true);
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true 
 }));
 
+// Handle preflight requests explicitly
+app.options('*', cors());
+
 app.use(express.json());
-// Error handling middleware
-app.use((error, req, res, next) => {
-  if (error instanceof multer.MulterError) {
-    if (error.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({ error: 'File too large. Maximum size is 5MB.' });
-    }
-  }
-  console.error('Server error:', error);
-  res.status(500).json({ error: 'Internal server error' });
-});
 
  const groq = new Groq({
       apiKey: process.env.GROQ_API_KEY ,
@@ -644,10 +640,6 @@ app.delete('/api/resume/analysis/:id', protect, async (req, res) => {
     }
 
     await ResumeAnalysis.findByIdAndDelete(id);
-    
-    if (!result) {
-      return res.status(404).json({ error: 'Analysis not found' });
-    }
 
     res.json({
       success: true,
@@ -672,6 +664,17 @@ app.get('/api/health', (req, res) => {
 app.get('/' , (req , res)=>{
   res.send("Server is ok ")
 })
+
+// Error handling middleware (must be AFTER all routes)
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'File too large. Maximum size is 5MB.' });
+    }
+  }
+  console.error('Server error:', error);
+  res.status(500).json({ error: 'Internal server error' });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
