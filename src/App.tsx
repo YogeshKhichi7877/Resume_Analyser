@@ -63,8 +63,28 @@ const AuthPage = ({ onLoginSuccess }: { onLoginSuccess: (token: string, userData
     setLoading(true);
 
     try {
+      // Wake up Render server first (handles free tier sleep)
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+        await fetch(`${ApiUrl}/api/health`, {
+          method: 'GET',
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+        console.log('Server is awake');
+      } catch (wakeError) {
+        // Server might be waking up, continue anyway
+        console.log('Waking up server...');
+      }
+
+      // Add small delay to allow server to wake up
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       // Determine URL based on mode
-      const url = isLogin 
+      const url = isLogin
         ? `${ApiUrl}/api/auth/login`
         : `${ApiUrl}/api/auth/register`;
 
@@ -79,7 +99,7 @@ const AuthPage = ({ onLoginSuccess }: { onLoginSuccess: (token: string, userData
       if (response.ok) {
         toast.success(isLogin ? 'Login Successful!' : 'Account Created!');
         // Pass the REAL token and user data to App
-        onLoginSuccess(data.token, data); 
+        onLoginSuccess(data.token, data);
       } else {
         toast.error(data.error || 'Authentication failed');
       }
